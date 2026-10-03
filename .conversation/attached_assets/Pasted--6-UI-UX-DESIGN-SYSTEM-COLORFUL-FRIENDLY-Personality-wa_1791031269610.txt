@@ -1,0 +1,22 @@
+## 6. UI/UX & DESIGN SYSTEM: COLORFUL & FRIENDLY
+- Personality: warm, encouraging, approachable, yet still professional and uncluttered. Think Duolingo's friendliness with Todoist's clarity. Never childish.
+- Color system:
+  - Primary: vibrant violet/indigo (#6C5CE7 range) with a soft gradient accent (violet to pink or blue)
+  - Secondary accents: teal, coral, sunshine yellow, mint
+  - Each list/category gets its own pastel color and emoji/icon, chosen by the user
+  - Priority colors: Low = mint green, Medium = sunny yellow, High = orange, Urgent = coral red
+  - Backgrounds: soft off-white (light mode) and deep navy-charcoal (dark mode), never harsh pure white or black
+- Each role gets its own theme accent on the dashboard (e.g., School Student = sky blue, College = violet, Professional = indigo, Freelancer = coral, Developer = teal, Teacher = green, Homemaker = peach, Other = user-picked)
+- Shapes: very rounded corners (rounded-2xl), soft layered shadows, pill-shaped tags, friendly rounded sans-serif font (Nunito, Poppins, or Plus Jakarta Sans) with clean sizing and spacing
+- Delight, used sparingly:
+  - Confetti burst or checkmark bounce when a task or full list is completed
+  - Friendly empty states with cute illustrations and encouraging copy ("All clear! Time to relax 🎉")
+  - Streak flame, progress ring, and level/badge milestones (e.g., "7-day streak!")
+  - Greeting by name and time of day ("Good morning, Priya ☀️")
+  - Smooth Framer Motion transitions; respect the "reduce motion" setting
+- Layout: collapsible left sidebar (lists, smart views, settings), top bar with search and quick-add, main content area, optional right detail panel for a task
+- Mobile: bottom navigation, swipe to complete/delete, floating "+" button
+- Light and dark mode fully supported with the same colorful personality
+- Keyboard shortcuts (N = new task, / = search, Cmd/Ctrl+K = command palette)
+- Accessibility: WCAG AA contrast even with colorful elements, never rely on color alone (use icons and labels for priority), keyboard navigation, ARIA labels, visible focus states
+- Onboarding: short, skippable, with a progress indicator and playful microcopy

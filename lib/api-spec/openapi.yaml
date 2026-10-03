@@ -2,14 +2,16 @@ openapi: 3.1.0
 info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
-  version: 0.1.0
-  description: API specification
+  version: 0.2.0
+  description: Free, private-by-default TaskFlow API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: taskflow
+    description: Authenticated TaskFlow data
 paths:
   /healthz:
     get:
@@ -24,6 +26,309 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /profile:
+    get:
+      operationId: getProfile
+      tags: [taskflow]
+      summary: Get the signed-in user's profile and preferences
+      responses:
+        "200":
+          description: Profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+    patch:
+      operationId: updateProfile
+      tags: [taskflow]
+      summary: Update role and app preferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdate"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+  /lists:
+    get:
+      operationId: getLists
+      tags: [taskflow]
+      summary: List the user's categories
+      responses:
+        "200":
+          description: User categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskList"
+    post:
+      operationId: createList
+      tags: [taskflow]
+      summary: Create a category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskListInput"
+      responses:
+        "201":
+          description: Created category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskList"
+  /lists/{listId}:
+    patch:
+      operationId: updateList
+      tags: [taskflow]
+      summary: Rename, recolor, or reorder a category
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskListUpdate"
+      responses:
+        "200":
+          description: Updated category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskList"
+    delete:
+      operationId: deleteList
+      tags: [taskflow]
+      summary: Delete a category while keeping its tasks uncategorized
+      parameters:
+        - name: listId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Deleted
+  /tasks:
+    get:
+      operationId: getTasks
+      tags: [taskflow]
+      summary: List and search tasks with pagination
+      parameters:
+        - name: listId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/TaskStatus"
+        - name: priority
+          in: query
+          schema:
+            $ref: "#/components/schemas/TaskPriority"
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: date
+          in: query
+          description: Filter tasks due on this ISO date
+          schema:
+            type: string
+            format: date
+        - name: overdue
+          in: query
+          schema:
+            type: boolean
+        - name: archived
+          in: query
+          schema:
+            type: boolean
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+      responses:
+        "200":
+          description: A page of matching tasks
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskPage"
+    post:
+      operationId: createTask
+      tags: [taskflow]
+      summary: Create a task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskInput"
+      responses:
+        "201":
+          description: Created task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+  /tasks/{taskId}:
+    patch:
+      operationId: updateTask
+      tags: [taskflow]
+      summary: Update task details, status, or order
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskUpdate"
+      responses:
+        "200":
+          description: Updated task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+    delete:
+      operationId: deleteTask
+      tags: [taskflow]
+      summary: Delete a task
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "204":
+          description: Deleted
+  /tasks/{taskId}/duplicate:
+    post:
+      operationId: duplicateTask
+      tags: [taskflow]
+      summary: Duplicate a task
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "201":
+          description: Duplicated task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+  /tasks/import:
+    post:
+      operationId: importTasks
+      tags: [taskflow]
+      summary: Import tasks from a validated CSV conversion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskImport"
+      responses:
+        "201":
+          description: Imported tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+  /dashboard:
+    get:
+      operationId: getDashboard
+      tags: [taskflow]
+      summary: Get today's progress and overview counts
+      responses:
+        "200":
+          description: Dashboard overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+  /dashboard/weekly:
+    get:
+      operationId: getWeeklyProgress
+      tags: [taskflow]
+      summary: Get a compact seven-day completion series
+      responses:
+        "200":
+          description: Weekly completion data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DailyProgress"
+  /account:
+    delete:
+      operationId: deleteAccountData
+      tags: [taskflow]
+      summary: Permanently delete the signed-in user's TaskFlow data
+      responses:
+        "204":
+          description: All TaskFlow data deleted
+  /feedback:
+    post:
+      operationId: submitFeedback
+      tags: [taskflow]
+      summary: Send anonymous product feedback
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeedbackInput"
+      responses:
+        "201":
+          description: Feedback received
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeedbackReceipt"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +338,191 @@ components:
           type: string
       required:
         - status
+    Role:
+      type: string
+      enum: [school, college, professional, freelancer, developer, teacher, personal, other]
+    TaskPriority:
+      type: string
+      enum: [low, medium, high, urgent]
+    TaskStatus:
+      type: string
+      enum: [todo, in_progress, done]
+    ThemePreference:
+      type: string
+      enum: [light, dark, system]
+    Profile:
+      type: object
+      required: [id, role, customRole, theme, accentColor, weekStartsOn, updatedAt]
+      properties:
+        id: { type: string }
+        role: { oneOf: [{ $ref: "#/components/schemas/Role" }, { type: "null" }] }
+        customRole: { type: ["string", "null"] }
+        theme: { $ref: "#/components/schemas/ThemePreference" }
+        accentColor: { type: string }
+        weekStartsOn: { type: integer, minimum: 0, maximum: 6 }
+        dailyStartTime: { type: ["string", "null"] }
+        workHours: { type: ["number", "null"] }
+        updatedAt: { type: string, format: date-time }
+    ProfileUpdate:
+      type: object
+      properties:
+        role: { oneOf: [{ $ref: "#/components/schemas/Role" }, { type: "null" }] }
+        customRole: { type: ["string", "null"] }
+        theme: { $ref: "#/components/schemas/ThemePreference" }
+        accentColor: { type: string }
+        weekStartsOn: { type: integer, minimum: 0, maximum: 6 }
+        dailyStartTime: { type: ["string", "null"] }
+        workHours: { type: ["number", "null"] }
+    TaskList:
+      type: object
+      required: [id, name, color, icon, position, taskCount]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        color: { type: string }
+        icon: { type: string }
+        position: { type: integer }
+        taskCount: { type: integer }
+    TaskListInput:
+      type: object
+      required: [name, color, icon, position]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 80 }
+        color: { type: string, maxLength: 24 }
+        icon: { type: string, maxLength: 32 }
+        position: { type: integer }
+    TaskListUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 1, maxLength: 80 }
+        color: { type: string, maxLength: 24 }
+        icon: { type: string, maxLength: 32 }
+        position: { type: integer }
+    Subtask:
+      type: object
+      required: [id, title, completed]
+      properties:
+        id: { type: string }
+        title: { type: string }
+        completed: { type: boolean }
+    Task:
+      type: object
+      required: [id, title, description, dueAt, priority, status, listId, tags, subtasks, recurrence, reminderAt, estimatedMinutes, archived, position, createdAt, completedAt]
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        description: { type: ["string", "null"] }
+        dueAt: { type: ["string", "null"], format: date-time }
+        priority: { $ref: "#/components/schemas/TaskPriority" }
+        status: { $ref: "#/components/schemas/TaskStatus" }
+        listId: { type: ["string", "null"], format: uuid }
+        tags:
+          type: array
+          items: { type: string }
+        subtasks:
+          type: array
+          items: { $ref: "#/components/schemas/Subtask" }
+        recurrence: { type: string, enum: [none, daily, weekly, monthly] }
+        reminderAt: { type: ["string", "null"], format: date-time }
+        estimatedMinutes: { type: ["integer", "null"], minimum: 1 }
+        archived: { type: boolean }
+        position: { type: integer }
+        createdAt: { type: string, format: date-time }
+        completedAt: { type: ["string", "null"], format: date-time }
+    TaskInput:
+      type: object
+      required: [title, priority, status, listId, tags, subtasks, recurrence, archived, position]
+      properties:
+        title: { type: string, minLength: 1, maxLength: 240 }
+        description: { type: ["string", "null"] }
+        dueAt: { type: ["string", "null"], format: date-time }
+        priority: { $ref: "#/components/schemas/TaskPriority" }
+        status: { $ref: "#/components/schemas/TaskStatus" }
+        listId: { type: ["string", "null"], format: uuid }
+        tags:
+          type: array
+          items: { type: string }
+        subtasks:
+          type: array
+          items: { $ref: "#/components/schemas/Subtask" }
+        recurrence: { type: string, enum: [none, daily, weekly, monthly] }
+        reminderAt: { type: ["string", "null"], format: date-time }
+        estimatedMinutes: { type: ["integer", "null"], minimum: 1 }
+        archived: { type: boolean }
+        position: { type: integer }
+    TaskUpdate:
+      type: object
+      properties:
+        title: { type: string, minLength: 1, maxLength: 240 }
+        description: { type: ["string", "null"] }
+        dueAt: { type: ["string", "null"], format: date-time }
+        priority: { $ref: "#/components/schemas/TaskPriority" }
+        status: { $ref: "#/components/schemas/TaskStatus" }
+        listId: { type: ["string", "null"], format: uuid }
+        tags:
+          type: array
+          items: { type: string }
+        subtasks:
+          type: array
+          items: { $ref: "#/components/schemas/Subtask" }
+        recurrence: { type: string, enum: [none, daily, weekly, monthly] }
+        reminderAt: { type: ["string", "null"], format: date-time }
+        estimatedMinutes: { type: ["integer", "null"], minimum: 1 }
+        archived: { type: boolean }
+        position: { type: integer }
+    TaskPage:
+      type: object
+      required: [items, total, offset, limit]
+      properties:
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/Task" }
+        total: { type: integer }
+        offset: { type: integer }
+        limit: { type: integer }
+    TaskImportRow:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string, minLength: 1, maxLength: 240 }
+        description: { type: ["string", "null"] }
+        dueAt: { type: ["string", "null"], format: date-time }
+        priority: { $ref: "#/components/schemas/TaskPriority" }
+        listName: { type: ["string", "null"] }
+        tags:
+          type: array
+          items: { type: string }
+    TaskImport:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          maxItems: 500
+          items: { $ref: "#/components/schemas/TaskImportRow" }
+    DashboardSummary:
+      type: object
+      required: [todayTotal, todayCompleted, overdueCount, completedThisWeek, streak]
+      properties:
+        todayTotal: { type: integer }
+        todayCompleted: { type: integer }
+        overdueCount: { type: integer }
+        completedThisWeek: { type: integer }
+        streak: { type: integer }
+    DailyProgress:
+      type: object
+      required: [date, completed]
+      properties:
+        date: { type: string, format: date }
+        completed: { type: integer }
+    FeedbackInput:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string, minLength: 5, maxLength: 2000 }
+    FeedbackReceipt:
+      type: object
+      required: [received]
+      properties:
+        received: { type: boolean }
 

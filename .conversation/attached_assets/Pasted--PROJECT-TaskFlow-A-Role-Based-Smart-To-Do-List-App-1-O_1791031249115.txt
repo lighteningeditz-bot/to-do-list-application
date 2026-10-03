@@ -1,0 +1,137 @@
+# PROJECT: TaskFlow – A Role-Based Smart To-Do List App
+
+## 1. OVERVIEW
+Build a professional, modern, full-stack to-do list web application called "TaskFlow" for students and working professionals. On first use, the user picks their role, and the app generates a customized to-do template for that role. The user can then freely edit, add, delete, reorder, and reorganize everything.
+
+Design goals: clean, minimal, fast, professional (think Notion / Todoist / Linear). Fully responsive (mobile-first).
+
+## 2. TECH STACK
+- Frontend: React + Vite + TypeScript, Tailwind CSS, shadcn/ui, Lucide icons, Framer Motion (subtle animations only)
+- Drag and drop: dnd-kit
+- Backend: Node.js + Express, PostgreSQL (Replit DB or Neon), Drizzle ORM
+- Auth: Email/password plus Google sign-in (Replit Auth or Passport.js). Also allow "Continue as guest" using localStorage, with an option to sync later.
+- State: Zustand or React Query
+- Validation: Zod
+
+## 3. USER FLOW
+1. Landing page: short hero, feature highlights, "Get Started" button.
+2. Sign up / log in (or continue as guest).
+3. ROLE SELECTION SCREEN (shown once, changeable later in Settings):
+   Large selectable cards with icon, title, and one-line description:
+   - 🎓 School Student
+   - 🏫 College / University Student
+   - 💼 Working Professional
+   - 🚀 Freelancer / Entrepreneur
+   - 🧑‍💻 Developer / Tech Professional
+   - 🧑‍🏫 Teacher / Educator
+   - 🏠 Homemaker / Personal Life
+   - ✨ Other (custom): user types their own role and picks a few focus areas
+4. Short personalization (2-3 quick steps, skippable):
+   - Main goal (e.g., exams, career growth, productivity, work-life balance)
+   - Preferred daily start time and work hours
+   - Optional: pick which template sections to include
+5. Template generation: show a preview of the generated template. The user can "Use this template", "Start blank", or toggle sections on or off before confirming.
+6. Dashboard with the generated lists, ready to edit.
+
+## 4. ROLE-BASED TEMPLATES
+Each template has Categories (lists), each with pre-filled sample tasks, suggested tags, and default priorities. All are fully editable and deletable.
+
+**School Student**
+- Homework & Assignments (Math, Science, English, etc.)
+- Exam Preparation (revision schedule, past papers)
+- Projects & Presentations
+- Extracurriculars & Hobbies
+- Daily Routine (wake up, study blocks, reading)
+- Weekly Goals
+
+**College / University Student**
+- Classes & Lectures (course-wise)
+- Assignments & Deadlines
+- Exam Prep & Study Plan
+- Research / Thesis / Projects
+- Internships & Job Applications
+- Clubs & Campus Activities
+- Finance & Personal Admin (fees, rent, budget)
+
+**Working Professional**
+- Today's Priorities (Top 3 MIT: most important tasks)
+- Meetings & Follow-ups
+- Projects & Deliverables
+- Emails & Communication
+- Career Growth (courses, certifications, networking)
+- Weekly Review
+- Personal & Health
+
+**Freelancer / Entrepreneur**
+- Client Work & Deadlines
+- Leads & Proposals
+- Invoices & Payments
+- Marketing & Content
+- Business Admin
+- Learning & Growth
+
+**Developer / Tech Professional**
+- Sprint Tasks
+- Bugs & Fixes
+- Code Reviews / PRs
+- Learning & Side Projects
+- Documentation
+- Deployment Checklist
+
+**Teacher / Educator**
+- Lesson Planning
+- Grading & Feedback
+- Classes & Schedule
+- Parent / Student Communication
+- Admin & Meetings
+- Professional Development
+
+**Homemaker / Personal Life**
+- Daily Household Tasks
+- Groceries & Shopping
+- Family & Appointments
+- Bills & Finance
+- Health & Self-Care
+- Goals & Hobbies
+
+**Other (Custom)**
+- Generates a blank-but-structured template: Today, This Week, Goals, Ideas, Personal
+- Uses the custom role name the user entered
+- Optionally lets the user pick from a menu of reusable sections drawn from the templates above
+
+Store templates as structured JSON/seed data (not hardcoded in components) so new roles can be added easily.
+
+## 5. CORE FEATURES
+**Task management**
+- Create, edit, delete, duplicate, complete, and archive tasks
+- Fields: title, description/notes, due date and time, priority (Low/Medium/High/Urgent), category/list, tags, subtasks (checklist), recurring (daily/weekly/monthly/custom), reminder, estimated time
+- Inline quick-add with natural language parsing (e.g., "Submit report tomorrow 5pm !high #work")
+- Drag and drop to reorder tasks and move them between lists
+- Bulk actions: multi-select, complete, delete, move, change priority
+- Undo/redo with toast notification
+
+**Template customization**
+- Add, rename, recolor, reorder, and delete lists/categories
+- Edit or remove any pre-filled sample task
+- "Reset to template" and "Switch role/template" options (with confirmation, and the option to keep existing tasks)
+- Save the current setup as a personal custom template
+
+**Views**
+- List view (default)
+- Board/Kanban view (To Do / In Progress / Done)
+- Calendar view (month/week)
+- Today / Upcoming / Overdue smart views
+- Search and filters (priority, tag, date, status) plus sort options
+
+**Productivity extras**
+- Dashboard with today's progress ring, streak counter, tasks completed this week, and overdue count
+- Weekly progress chart (Recharts)
+- Pomodoro / focus timer linked to a task
+- Role-specific widgets:
+  - Students: exam countdown, study-hours tracker, GPA/grade notes
+  - Professionals: Top 3 priorities, meeting-prep checklist, weekly review prompt
+- Daily motivational/productivity tip (small, unobtrusive)
+- Export to CSV/JSON; import from CSV
+
+**Settings**
+- Profile, role change, theme (Light / Dark / System), accent color, week start day, notification preferences, data export, delete account

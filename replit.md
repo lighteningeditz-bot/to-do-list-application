@@ -1,6 +1,6 @@
-# [Project name]
+# TaskFlow
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A friendly role-based task planner for students and working professionals, with customizable starter templates and private, user-owned task data.
 
 ## Run & Operate
 
@@ -22,19 +22,29 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/taskflow` — responsive React app, onboarding, dashboard, tasks, and settings
+- `artifacts/api-server/src/routes/taskflow.ts` — authenticated task, list, profile, dashboard, and deletion endpoints
+- `lib/api-spec/openapi.yaml` — source of truth for API contracts
+- `lib/db/src/schema/taskflow.ts` — PostgreSQL schema
+- Role templates live in the frontend data layer and should remain structured data, not UI markup
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Guests can use the core planner without an account; guest data stays in the browser.
+- Signed-in users store their planner data in PostgreSQL under their Clerk user ID.
+- Keep list reads bounded and task reads paginated; cap each task page at 100.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- TaskFlow is free for everyone. Do not add ads, pricing pages, paywalls, upgrades, subscriptions, or payment integrations.
+- Every feature is available to every user. Prefer lightweight, free-tier services and efficient data access.
+- Users must be able to export their data and permanently delete their account data from Settings.
+- Include a simple footer with Privacy Policy, Terms, and Send feedback links. Keep data collection minimal and explain it plainly.
+- Role-based templates cover school, college, work, freelancing, development, teaching, personal life, and custom roles.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+Keep the experience warm, approachable, professional, responsive, and accessible; support light, dark, and system themes.
 
 ## Gotchas
 
